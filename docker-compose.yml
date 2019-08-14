@@ -1,0 +1,38 @@
+version: '3.6'
+services:
+  ruby:
+    container_name: isucon2018-ruby
+    command: bundle exec rackup -p 8080 -o 0.0.0.0
+    build:
+      context: ./webapp/ruby
+      args:
+        RUBY_VERSION: 2.5.3
+    working_dir: /isucon/webapp/ruby
+    volumes:
+      - vendor:/vendor
+      - .:/isucon:cached
+    environment:
+      DATABASE_HOST: mariadb
+    env_file:
+      - webapp/env.sh
+    ports:
+      - "8080:8080"
+    depends_on: ["mariadb"]
+    tty: true
+    stdin_open: true
+
+  mariadb:
+    container_name: isucon2018-mariadb
+    image: mariadb:10.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=torb
+      - MYSQL_USER=isucon
+      - MYSQL_PASSWORD=isucon
+    volumes:
+      - mariadb:/var/lib/mysql
+      - .:/isucon:cached
+
+volumes:
+  mariadb:
+  vendor:
