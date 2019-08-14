@@ -16,7 +16,25 @@ services:
     env_file:
       - webapp/env.sh
     ports:
-      - "8080:8080"
+      - "8081:8080"
+    depends_on: ["mariadb"]
+    tty: true
+    stdin_open: true
+
+  go:
+    container_name: isucon2018-go
+    command: go run src/torb/app.go
+    image: golang:1.10.3
+    working_dir: /isucon/webapp/go
+    volumes:
+      - ./webapp/go/vendor:/go:cached
+      - .:/isucon:cached
+    environment:
+      DATABASE_HOST: mariadb
+    env_file:
+      - webapp/env.sh
+    ports:
+      - "8082:8080"
     depends_on: ["mariadb"]
     tty: true
     stdin_open: true
